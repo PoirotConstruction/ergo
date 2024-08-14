@@ -66,7 +66,7 @@ func ServeProxy(config *Config) error {
 
 	http.Handle("/", NewErgoProxy(config))
 
-	return http.ListenAndServe(":"+config.Port, nil)
+	return http.ListenAndServe(config.Address + ":" + config.Port, nil)
 }
 
 func proxy(config *Config) func(http.ResponseWriter, *http.Request) {
@@ -74,7 +74,7 @@ func proxy(config *Config) func(http.ResponseWriter, *http.Request) {
 		content := `
 		function FindProxyForURL (url, host) {
 			if (dnsDomainIs(host, '` + config.Domain + `')) {
-				return 'PROXY 127.0.0.1:` + config.Port + `';
+				return 'PROXY ` +config.Address+ `:` + config.Port + `';
 			}
 
 			return 'DIRECT';

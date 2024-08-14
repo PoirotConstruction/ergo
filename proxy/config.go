@@ -20,6 +20,7 @@ type Config struct {
 
 	Port       string
 	Domain     string
+    Address    string
 	Verbose    bool
 	Services   map[string]Service
 	ConfigFile string
@@ -31,11 +32,13 @@ type Config struct {
 const (
 	PortEnv       = "ERGO_PORT"
 	DomainEnv     = "ERGO_DOMAIN"
+    AddressEnv    = "ERGO_ADDRESS"
 	VerboseEnv    = "ERGO_VERBOSE"
 	ConfigFileEnv = "ERGO_CONFIG_FILE"
 
 	PortDefault           = "2000"
 	DomainDefault         = ".dev"
+	AddressDefault		  = "127.0.0.1"
 	ConfigFilePathDefault = "./.ergo"
 )
 
@@ -44,6 +47,7 @@ func NewConfig() *Config {
 	var config = &Config{
 		Port:       PortDefault,
 		Domain:     DomainDefault,
+		Address:	AddressDefault,
 		ConfigFile: ConfigFilePathDefault,
 		Verbose:    os.Getenv(VerboseEnv) != "",
 		Services:   make(map[string]Service),
@@ -57,6 +61,11 @@ func NewConfig() *Config {
 	domain, isDomainPresent := os.LookupEnv(DomainEnv)
 	if isDomainPresent {
 		config.Domain = domain
+	}
+
+	address, isAddressPresent := os.LookupEnv(AddressEnv)
+	if isAddressPresent {
+		config.Address = address
 	}
 
 	configFile, isConfigFilePresent := os.LookupEnv(ConfigFileEnv)
@@ -76,6 +85,10 @@ func (c *Config) OverrideBy(new *Config) {
 
 	if new.Domain != "" {
 		c.Domain = new.Domain
+	}
+
+	if new.Address != "" {
+		c.Address = new.Address
 	}
 
 	if new.Verbose != c.Verbose {
@@ -132,7 +145,7 @@ func (c *Config) GetService(host string) (*Service, error) {
 
 // GetProxyPacURL returns the correct url for the pac file
 func (c *Config) GetProxyPacURL() string {
-	return "http://127.0.0.1:" + c.Port + "/proxy.pac"
+	return "http://" +c.Address+ ":" + c.Port + "/proxy.pac"
 }
 
 // AddService add a service using the correct key
