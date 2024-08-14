@@ -19,7 +19,7 @@ func (c RunCommand) Execute(config *proxy.Config) (string, error) {
 		return "", fmt.Errorf("Domain has a wrong format")
 	}
 
-	fmt.Println("Ergo Proxy listening on port " + config.Port + " for domains " + config.Domain)
+	fmt.Println("Ergo Proxy listening at " + config.Address + " on port " + config.Port + " for domains " + config.Domain)
 
 	err := proxy.ServeProxy(config)
 	if err != nil {
